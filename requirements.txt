@@ -1,0 +1,8 @@
+# Core dependencies
+sentence-transformers>=2.2.2
+scikit-learn>=1.1.0
+numpy>=1.21
+psutil>=5.9.0
+PyMuPDF>=1.19
+nltk>=3.8
+jinja2>=3.1
