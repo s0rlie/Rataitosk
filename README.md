@@ -14,7 +14,7 @@ Developed as part of a Bachelor's thesis in IT & Digitalization.
 Overall semantic overlap using distributional semantics (Harris, 1954; Reimers & Gurevych, 2019). Provides baseline assessment of whether documents address similar themes regardless of rhetorical style.
 
 **2. Temporal Positioning**  
-How documents construct temporal narratives linking past initiatives, present commitments, and future goals. Grounded in Temporal Work Theory (Kaplan & Orlikowski, 2013) and narrative sensemaking (Weick, 1995).
+How documents construct temporal narratives linking past initiatives, present commitments, and future goals. Grounded in Temporal Work Theory (Kaplan & Orlikowski, 2012) and narrative sensemaking (Weick, 1995).
 
 **3. Operational Grounding**  
 Emphasis on present capabilities, existing structures, and ongoing work. Based on exploitation logic (March, 1991) and strategic fit theory (Henderson & Venkatraman, 1993).
@@ -209,5 +209,6 @@ https://www.ntnu.edu/employees/thomas.aarnseth
 ---
 
 ## Acknowledgments
+
 
 This work was supervised by Professor Bjørn Jæger at Høgskolen i Molde. Professor Hans Solli-Sæther provided essential guidance on the strategy perspective.
