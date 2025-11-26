@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SAMS Scorecard: Fakultetsstrategi-oktober-utkast vs NTNU-Strategi-2035</title>
+  <style>
+    /* === COLOR SYSTEM === */
+    :root {
+      /* Core Palette */
+      --sky-blue: #96C0D9;           /* Primary UI, links, scorecard background */
+      --dusty-blue: #99AED0;         /* Table headers, darker emphasis */
+      --periwinkle: #9FBEDB;         /* Light backgrounds, subtle elements */
+      --teal-blue: #87B4C4;          /* Positive scores, high similarity */
+      --lavender: #B1B9DB;           /* Neutral scores, balanced states */
+      --warm-tan: #C6AA87;           /* Divergent scores, low similarity */
+      
+      /* Background System */
+      --bg-page: #f8f9fb;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #fafbfc;
+      
+      /* Text Colors */
+      --text-primary: #2c3e50;
+      --text-secondary: #5a6c7d;
+      --text-muted: #8492a6;
+      
+      /* Borders */
+      --border-light: #e8eef3;
+      --border-medium: #d0dae3;
+    }
+
+    /* === GENERAL === */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0 auto;
+      padding: 2em;
+      max-width: 1200px;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--dusty-blue);
+      padding-bottom: 0.5em;
+      margin-top: 0;
+      margin-bottom: 1em;
+      font-weight: 600;
+      font-size: 1.8em;
+    }
+
+    h2 {
+      color: var(--sky-blue);
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 0.4em;
+      margin-top: 0;
+      margin-bottom: 1em;
+      font-weight: 600;
+      font-size: 1.4em;
+    }
+
+    /* === METADATA SECTION === */
+    .metadata {
+      background-color: var(--bg-card-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 0.5em;
+      padding: 1em 1.5em;
+      margin: 1.5em 0;
+      font-size: 0.95em;
+      color: var(--text-secondary);
+    }
+
+    .metadata p {
+      margin: 0.5em 0;
+    }
+
+    .metadata a {
+      color: var(--sky-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .metadata a:hover {
+      text-decoration: underline;
+    }
+
+    /* === COLLAPSIBLE SECTIONS === */
+    details {
+      border: 1px solid var(--border-light);
+      border-radius: 0.5em;
+      margin: 1.5em 0;
+      background-color: var(--bg-card);
+    }
+
+    details summary {
+      padding: 1em 1.5em;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--sky-blue);
+      user-select: none;
+      background-color: var(--bg-card-subtle);
+      border-radius: 0.5em;
+      transition: background-color 0.2s ease;
+    }
+
+    details summary:hover {
+      background-color: rgba(159, 190, 219, 0.2);
+    }
+
+    details[open] summary {
+      border-bottom: 1px solid var(--border-light);
+      border-radius: 0.5em 0.5em 0 0;
+    }
+
+    details .content {
+      padding: 1.5em;
+    }
+
+    /* Custom arrow for summary */
+    details summary {
+      list-style: none;
+    }
+
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details summary::before {
+      content: '▸';
+      display: inline-block;
+      margin-right: 0.5em;
+      transition: transform 0.2s ease;
+      color: var(--sky-blue);
+    }
+
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    /* === SAMS SCORECARD === */
+    .sams-scorecard {
+      background-color: rgba(150, 192, 217, 0.08);
+      border: 2px solid var(--sky-blue);
+      border-radius: 0.5em;
+      padding: 1.5em;
+      margin: 2em 0;
+      box-shadow: 0 2px 8px rgba(150, 192, 217, 0.15);
+    }
+
+    .scorecard-note {
+      margin-top: 1em;
+      padding: 0.75em 1em;
+      background-color: rgba(159, 190, 219, 0.15);
+      border-left: 3px solid var(--sky-blue);
+      font-size: 0.9em;
+      color: var(--text-secondary);
+      font-style: italic;
+      border-radius: 0 0.25em 0.25em 0;
+    }
+
+    /* === SCORES TABLE === */
+    .scores-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1em;
+    }
+
+    .scores-table thead {
+      background-color: var(--dusty-blue);
+      color: white;
+    }
+
+    .scores-table th {
+      padding: 0.9em 1em;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .scores-table td {
+      padding: 1em;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+
+    .scores-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .scores-table tbody tr:hover {
+      background-color: rgba(159, 190, 219, 0.15);
+    }
+
+    /* === SCORE BADGES === */
+    .score-badge {
+      display: inline-block;
+      padding: 0.4em 0.9em;
+      border-radius: 0.4em;
+      font-weight: 600;
+      font-size: 1em;
+      text-align: center;
+      min-width: 60px;
+    }
+
+    .score-percentage {
+      background-color: var(--teal-blue);
+      color: white;
+    }
+
+    .score-positive {
+      background-color: var(--teal-blue);
+      color: white;
+    }
+
+    .score-negative {
+      background-color: var(--warm-tan);
+      color: white;
+    }
+
+    .score-neutral {
+      background-color: var(--lavender);
+      color: white;
+    }
+
+    /* === CHUNK PAIRS TABLE === */
+    .chunk-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.9em;
+    }
+
+    .chunk-table thead {
+      background-color: var(--dusty-blue);
+      color: white;
+    }
+
+    .chunk-table th {
+      padding: 0.8em 1em;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .chunk-table td {
+      padding: 1em;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .chunk-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .chunk-table tbody tr:hover {
+      background-color: rgba(159, 190, 219, 0.15);
+    }
+
+    .similarity-cell {
+      text-align: center;
+      vertical-align: middle !important;
+    }
+
+    .similarity-badge {
+      display: inline-block;
+      padding: 0.4em 0.8em;
+      border-radius: 0.4em;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    .similarity-badge.high {
+      background-color: var(--teal-blue);
+      color: white;
+    }
+
+    .similarity-badge.low {
+      background-color: var(--warm-tan);
+      color: white;
+    }
+
+    /* === CHUNK SECTION STYLING === */
+    .chunk-section {
+      margin-top: 2em;
+    }
+
+    .chunk-section.similar summary {
+      color: var(--teal-blue);
+    }
+
+    .chunk-section.divergent summary {
+      color: var(--warm-tan);
+    }
+
+    /* === INTERPRETATION CELL === */
+    .interpretation {
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    .interpretation strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .interpretation small {
+      color: var(--text-muted);
+      font-style: italic;
+      display: block;
+      margin-top: 0.4em;
+    }
+
+    /* === METHODOLOGY SECTION === */
+    .methodology-box {
+      background-color: rgba(159, 190, 219, 0.12);
+      border-left: 3px solid var(--sky-blue);
+      padding: 1em 1.5em;
+      margin-bottom: 1.5em;
+      border-radius: 0 0.25em 0.25em 0;
+    }
+
+    .methodology-box h4 {
+      color: var(--dusty-blue);
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+      font-size: 1em;
+    }
+
+    .methodology-box h4:first-of-type {
+      margin-top: 0;
+    }
+
+    .methodology-box p {
+      margin: 0.5em 0;
+      line-height: 1.6;
+    }
+
+    .methodology-box em {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .methodology-footer {
+      margin-top: 1.5em;
+      padding-top: 1em;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .methodology-footer h4 {
+      color: var(--dusty-blue);
+      margin-bottom: 0.5em;
+      font-weight: 600;
+    }
+
+    .methodology-footer p {
+      margin: 0;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* === TECHNICAL NOTE === */
+    .technical-note {
+      margin-top: 2em;
+      background-color: var(--bg-card-subtle);
+    }
+
+    .technical-note summary {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .technical-note ul {
+      margin: 0.5em 0;
+      padding-left: 1.5em;
+    }
+
+    .technical-note li {
+      margin: 0.5em 0;
+      line-height: 1.6;
+    }
+
+    .technical-note hr {
+      margin: 1.5em 0;
+      border: none;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* === FOOTER === */
+    .footer {
+      margin-top: 3em;
+      padding-top: 2em;
+      border-top: 2px solid var(--border-light);
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9em;
+    }
+
+    .footer p {
+      margin: 0.5em 0;
+    }
+
+    .footer a {
+      color: var(--sky-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .footer .citation {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <h1>Strategic Alignment Measurement Scorecard</h1>
+  
+  <!-- Metadata Section -->
+  <div class="metadata">
+    <p><strong>Document 1:</strong> Fakultetsstrategi-oktober-utkast</p>
+    <p><strong>Document 2:</strong> NTNU-Strategi-2035</p>
+    <p><strong>Analysis Date:</strong> 2025-11-10 14:02:52</p>
+    <p><strong>Method:</strong> Semantic similarity analysis using sentence embeddings</p>
+    <p><strong>Purpose:</strong> Computational detection of semantic alignment patterns in strategic documents</p>
+  </div>
+
+  <!-- How to Read This Report -->
+  <details open>
+    <summary>How to Read This Report</summary>
+    <div class="content">
+      <p>This report presents <strong>four semantic axes</strong> measuring different aspects of strategic alignment between two documents using computational text analysis.</p>
+      
+      <div class="methodology-box">
+        <h4>Thematic Similarity (0-100%)</h4>
+        <p><strong>What it measures:</strong> Direct pairwise cosine similarity between all chunk combinations from both documents.</p>
+        <p><strong>Interpretation:</strong> 
+        Scores above 70% indicate high thematic overlap. 
+        Scores between 40-70% suggest moderate alignment. 
+        Scores below 40% indicate distinct focus areas.</p>
+        <p><em>Note: Measures shared vocabulary and topics, not strategic effectiveness.</em></p>
+        
+        <h4>Temporal Positioning (-100 to +100)</h4>
+        <p><strong>What it measures:</strong> Relative emphasis on present-focused vs future-focused language using differential two-anchor scoring.</p>
+        <p><strong>Interpretation:</strong> 
+        Positive scores = Fakultetsstrategi-oktober-utkast more future-focused than NTNU-Strategi-2035. 
+        Negative scores = NTNU-Strategi-2035 more future-focused than Fakultetsstrategi-oktober-utkast. 
+        Scores near zero = similar temporal emphasis.</p>
+        <p><em>Note: Measures temporal language patterns, not actual strategic time horizons.</em></p>
+        
+        <h4>Operational Grounding (-100 to +100)</h4>
+        <p><strong>What it measures:</strong> Relative emphasis on present-capability and operational-feasibility language using single-anchor comparative scoring.</p>
+        <p><strong>Interpretation:</strong> 
+        Positive scores = Fakultetsstrategi-oktober-utkast uses more operationally-grounded language. 
+        Negative scores = NTNU-Strategi-2035 uses more operationally-grounded language. 
+        Scores near zero = similar operational emphasis.</p>
+        <p><em>Note: Measures language about current capabilities, not actual operational feasibility.</em></p>
+        
+        <h4>Transformational Vision (-100 to +100)</h4>
+        <p><strong>What it measures:</strong> Relative emphasis on future-ambition and transformational language using single-anchor comparative scoring.</p>
+        <p><strong>Interpretation:</strong> 
+        Positive scores = Fakultetsstrategi-oktober-utkast uses more transformational language. 
+        Negative scores = NTNU-Strategi-2035 uses more transformational language. 
+        Scores near zero = similar transformational emphasis.</p>
+        <p><em>Note: Measures language about future ambitions, not strategic capacity or change readiness.</em></p>
+        
+        <div class="methodology-footer">
+          <h4>Three Architectural Patterns</h4>
+          <p>This analysis employs three distinct computational approaches matched to different theoretical constructs: <strong>(1)</strong> direct pairwise comparison for baseline overlap, <strong>(2)</strong> differential two-anchor scoring for oppositional emphasis (present vs future), and <strong>(3)</strong> single-anchor comparative scoring for unipolar intensity measures (operational grounding, transformational vision).</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- SAMS SCORECARD - Primary Artifact -->
+  <div class="sams-scorecard">
+    <h2>Semantic Alignment Scores</h2>
+    
+    <table class="scores-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Semantic Axis</th>
+          <th style="width: 15%;">Score</th>
+          <th style="width: 60%;">Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td><strong>Thematic Similarity</strong></td>
+            <td>
+              
+                <span class="score-badge score-percentage">54.18%</span>
+              
+            </td>
+            <td class="interpretation">
+              
+                
+                  <strong>Moderate alignment:</strong> Documents have overlapping themes but also distinct focus areas.
+                
+                <br><small>Direct pairwise cosine similarity across all chunk pairs.</small>
+                
+              
+            </td>
+          </tr>
+        
+          <tr>
+            <td><strong>Temporal Positioning</strong></td>
+            <td>
+              
+                
+                  <span class="score-badge score-neutral">-0.95</span>
+                
+              
+            </td>
+            <td class="interpretation">
+              
+                
+                  <strong>Similar temporal emphasis:</strong> Both documents use comparable present/future language (difference < 2 points).
+                
+                <br><small>Differential two-anchor scoring (present-focused vs future-focused language).</small>
+                
+              
+            </td>
+          </tr>
+        
+          <tr>
+            <td><strong>Operational Grounding</strong></td>
+            <td>
+              
+                
+                  <span class="score-badge score-neutral">0.24</span>
+                
+              
+            </td>
+            <td class="interpretation">
+              
+                
+                  <strong>Similar operational emphasis:</strong> Both documents show comparable grounding in current capabilities (difference < 2 points).
+                
+                <br><small>Single-anchor comparative scoring against operational grounding reference.</small>
+                
+              
+            </td>
+          </tr>
+        
+          <tr>
+            <td><strong>Transformational Vision</strong></td>
+            <td>
+              
+                
+                  <span class="score-badge score-neutral">-0.38</span>
+                
+              
+            </td>
+            <td class="interpretation">
+              
+                
+                  <strong>Similar transformational emphasis:</strong> Both documents show comparable future ambition (difference < 2 points).
+                
+                <br><small>Single-anchor comparative scoring against transformational vision reference.</small>
+              
+            </td>
+          </tr>
+        
+      </tbody>
+    </table>
+    
+    <div class="scorecard-note">
+      This scorecard serves as a boundary object for institutional dialogue about semantic alignment patterns in strategic documents.
+    </div>
+  </div>
+
+  <!-- Technical Details (Collapsed) -->
+  <details class="technical-note">
+    <summary>Technical Details</summary>
+    <div class="content">
+      <p><strong>Embedding Model:</strong> sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</p>
+      <p><strong>Chunking Strategy:</strong> Semantic chunking with sentence-level granularity</p>
+      <p><strong>Architectural Patterns:</strong></p>
+      <ul>
+        <li><strong>Pattern 1 - Direct Pairwise:</strong> Thematic Similarity (mean pairwise cosine similarity)</li>
+        <li><strong>Pattern 2 - Differential Two-Anchor:</strong> Temporal Positioning (present vs future anchors)</li>
+        <li><strong>Pattern 3 - Single-Anchor Comparative:</strong> Operational Grounding & Transformational Vision</li>
+      </ul>
+      <p><strong>Reference Concepts:</strong> English paragraph anchors adapted from theoretical literature (Table A1.2 in Appendix A)</p>
+      <p><strong>Scoring Philosophy:</strong> Narrow semantic proxies for language patterns, not measures of organizational capacity or strategic reality</p>
+      
+      <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--border-light);">
+      
+      <p><strong>Computational Environment:</strong></p>
+      <ul>
+        <li><strong>Hardware:</strong> 11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz, 16GB RAM</li>
+        <li><strong>Total Runtime:</strong> 
+          
+            13.3s
+          
+        </li>
+      </ul>
+      <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 1em;">
+        <em>Note: All processing performed locally. Hardware specifications and runtime included to support reproducibility and demonstrate computational feasibility of local-first semantic analysis.</em>
+      </p>
+    </div>
+  </details>
+
+  <!-- Chunk Pair Analysis -->
+  
+    
+      
+      <!-- Top Similar Chunks (Open by Default) -->
+      <details class="chunk-section similar" open>
+        <summary>Top 10 Most Semantically Similar Chunk Pairs</summary>
+        <div style="padding: 0; overflow: hidden;">
+          <table class="chunk-table">
+            <thead>
+              <tr>
+                <th style="width: 45%;">Fakultetsstrategi-oktober-utkast</th>
+                <th style="width: 10%;">Similarity</th>
+                <th style="width: 45%;">NTNU-Strategi-2035</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>• Styrke kvaliteten i ph.d.-utdanningen, slik at våre kandidater rekrutteres til forskerkarrierer nasjonalt og internasjonalt og er etterspurte av næringsliv, offentlig sektor og organisasjoner med behov for avansert analyse- og forskningskompetanse. • Sikre og ivareta en profesjonell og kostnadseffektiv administrasjon med høy kompetanse innenfor relevante områder. • Posisjonere oss som attraktive samarbeidspartnere for ledende kunnskapsmiljøer nasjonalt og internasjonalt. Dette skal styrke kunnskapsutvikling, faglig kvalitet og internasjonal gjennomslagskraft.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.87</span>
+                  </td>
+                  <td>Ph.d.-kandidatene er en viktig del av vår forskningsressurs, og doktorgradsutdanningen skal være anerkjent for å holde høyt internasjonalt nivå. Forskningsaktiviteten vår skal gi et sterkt grunnlag for fremragende utdanning, innovasjon og formidling. NTNU skal tilby nasjonalt og internasjonalt attraktive utdanninger som er forskningsbaserte, relevante og framtidsrettede, og som utvikles i tett samspill med arbeidslivet og andre samfunnsaktører. Vi skal videreutvikle den utdanningsfaglige kompetansen vår og styrke arbeidet med å fornye lærings-, undervisnings- og vurderingsformer, i tråd med den internasjonale kunnskapsfronten.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal samarbeide tettere med ledende kunnskapsmiljøer over hele verden. Dette oppnår vi gjennom å  • Bygge og videreutvikle sterke forskningsmiljøer på høyt internasjonalt nivå, i samspill med ledende forskningsmiljøer globalt. Vi skal flytte forskningsfronten gjennom betydningsfulle forskningspublikasjoner og tilslag på toppforskningsprosjekter. • Tilby forskningsbaserte utdanninger av høy kvalitet som møter internasjonale standarder gjennom akkreditering, er attraktive både nasjonalt og internasjonalt, og anerkjennes gjennom priser og merittering av undervisere.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.86</span>
+                  </td>
+                  <td>Samtidig skal vi videreutvikle våre sterke fagmiljøer innen disiplin-, profesjons- og kunstfag. Denne unike kombinasjonen gir oss mulighet til å utvikle kunnskap, kompetanse og studietilbud som er helt i front internasjonalt. Vi skal videreutvikle og bygge flere verdensledende fagmiljøer. Samtidig skal vi legge til rette for langsiktig forskning og utvikling i hele den faglige bredden vår.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi oppfordrer og legger til rette for at våre ansatte deltar i samfunnsdebatten med forskningsbasert kunnskap. Ved å tydelig fremheve akademisk frihet som en kjerneverdi, sikrer fakultetet at det forblir en arena for kunnskap, refleksjon og kritisk tenkning. Premiss B: Lærings- og arbeidsmiljø  Vi kjennetegnes av en kultur med respekt, omtenksomhet og en høy grad av involvering og medvirkning fra både ansatte og studenter. Alle studenter og ansatte ved fakultetet skal bidra til godt og utviklende lærings- og arbeidsmiljø, hvor ledere har et særskilt ansvar.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.84</span>
+                  </td>
+                  <td>Vi vil hegne om vår uavhengighet både institusjonelt og for våre vitenskapelig ansatte. Vi vil støtte våre ansattes muligheter til å delta i samfunnsdebatten med forskningsbasert kunnskap. Akademisk frihet innebærer også at vi arbeider i tråd med anerkjente normer for redelighet og kvalitet innenfor våre felt, og at vi har et ansvar for å bidra til at andre fagmiljøer etterlever de samme normene. B. Lærings- og arbeidsmiljø Alle studenter og ansatte ved NTNU forventes å bidra til gode lærings- og arbeidsmiljø, og ledere har et særskilt ansvar.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal ha et bredt utdanningstilbud og utdanne økonomer og ingeniører med dyp fagkunnskap og tverrfaglig samarbeidskompetanse. • Sikre at utdanningsportefølje og forskning utvikles i et tett samspill og danner et sterkt grunnlag for videre forskning, utdanning, innovasjon og formidling. I tillegg til toppforskning krever dette at vi legger til rette for langsiktig kunnskapsutvikling i bredden av våre fagområder og har en bærekraftig portefølje av eksternt finansierte aktiviteter. • Videreutvikle den utdanningsfaglige kompetansen vår og styrke arbeidet med å fornye lærings-, undervisnings- og vurderingsformer, i tråd med den internasjonale kunnskapsfronten.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.83</span>
+                  </td>
+                  <td>Samtidig skal vi videreutvikle våre sterke fagmiljøer innen disiplin-, profesjons- og kunstfag. Denne unike kombinasjonen gir oss mulighet til å utvikle kunnskap, kompetanse og studietilbud som er helt i front internasjonalt. Vi skal videreutvikle og bygge flere verdensledende fagmiljøer. Samtidig skal vi legge til rette for langsiktig forskning og utvikling i hele den faglige bredden vår.</td>
+                </tr>
+              
+                <tr>
+                  <td>7  Premiss D: Organisasjon og ledelse  Vi har en kultur preget av engasjerte ansatte og studenter, medvirkning og god ledelse. Kompetente ledere på alle nivåer i organisasjonen sikres gjennom rekruttering, lederutvikling og lederstøtte. Vi har gode og tydelige kommunikasjonslinjer, strukturer og rolleforståelse. Åpenhet, medbestemmelse og samarbeid med verneombud, ansatte- og studenttillitsvalgte er sentralt i beslutningsprosesser ved fakultetet.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.81</span>
+                  </td>
+                  <td>Kompetente ledere på alle nivå i organisasjonen sikres gjennom lederutvikling og god lederstøtte. Åpenhet, medbestemmelse og samarbeid med ansatte- og studenttillitsvalgte og verneombud, er sentralt i beslutningsprosesser ved NTNU. Gjennom god økonomistyring, forutsigbare rammebetingelser og en veltilpasset administrasjon skapes et godt grunnlag for aktiviteten ved den enkelte enhet. Vi vil utvikle oss som en kompetent organisasjon med brukervennlige og effektive støttesystemer som tilpasses behovene til ansatte, studenter og samfunnets forventninger.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal bygge et fellesskap preget av tillit og engasjement, der ansatte og studenter skal ha reell innflytelse. 6 Premisser – forutsetninger for å lykkes  Premiss A: Akademisk frihet  Den akademiske friheten er en grunnleggende forutsetning for vår faglige aktivitet. Vi arbeider i tråd med anerkjente normer for redelighet og kvalitet innenfor våre felter. Vi vil hegne om fortsatt akademisk frihet og vår uavhengighet, både institusjonelt og for alle våre vitenskapelige ansatte.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.81</span>
+                  </td>
+                  <td>Vi vil hegne om vår uavhengighet både institusjonelt og for våre vitenskapelig ansatte. Vi vil støtte våre ansattes muligheter til å delta i samfunnsdebatten med forskningsbasert kunnskap. Akademisk frihet innebærer også at vi arbeider i tråd med anerkjente normer for redelighet og kvalitet innenfor våre felt, og at vi har et ansvar for å bidra til at andre fagmiljøer etterlever de samme normene. B. Lærings- og arbeidsmiljø Alle studenter og ansatte ved NTNU forventes å bidra til gode lærings- og arbeidsmiljø, og ledere har et særskilt ansvar.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi utdanner økonomer og ingeniører, legger til rette for livslang læring og tilbyr emner til andre fakulteter og utdanninger ved NTNU. Vi har fagmiljøer i Trondheim, Gjøvik og Ålesund. Gjennom spisskompetanse i våre tre faglige søyler og vår unike kompetanse på tverrfaglig samarbeid, tilstreber vi samhandling i hele NTNUs faglige bredde, med særlig vekt på den teknisk-naturvitenskapelige hovedprofilen. 2    Visjon  Fremragende i koblingen mellom økonomi, ledelse og teknologi  Vi skal være et fremragende fagmiljø som kobler økonomi og ledelse med teknologi og naturvitenskap.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.80</span>
+                  </td>
+                  <td>Kandidatene er det viktigste bidraget vårt til samfunnsutvikling og bærekraftig omstilling. Våre kandidater skal være høyt kompetente, faglig sterke, tverrfaglig orienterte og godt forberedte til et arbeidsliv i kontinuerlig endring. NTNUs utdanninger skal bidra til å møte framtidens kompetansebehov, og vi skal tilby fleksible og tilgjengelige utdanningstilbud som gjør det mulig å lære gjennom hele livet. Ambisjon 3 NTNU skal være et attraktivt akademisk felleskap Norges teknisk-naturvitenskapelige universitet skal være det mest attraktive universitetet i Norge for ambisiøse studenter og ansatte som søker faglig utvikling og tilhørighet i et sterkt akademisk fellesskap.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal utnytte fakultetets sterke fagmiljøer innen tverrfaglig samarbeid, læringsmiljø og varierte læringsformer. Våre kandidater skal lede omstillingen til et mer bærekraftig samfunn gjennom kunnskap om bærekraft, økonomisk kompetanse, teknologisk forståelse og ledelsesferdigheter. • Tilpasse utdanningene til fremtidens kompetansebehov innen våre fagfelt, og tilby fleksible utdanningstilbud som støtter livslang læring. Gjennom å koble forskning med undervisning skal våre utdanninger være relevante, fremtidsrettede og utvikles i tett dialog med øvrige fagmiljøer, arbeidslivet og andre samfunnsaktører.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.80</span>
+                  </td>
+                  <td>Kandidatene er det viktigste bidraget vårt til samfunnsutvikling og bærekraftig omstilling. Våre kandidater skal være høyt kompetente, faglig sterke, tverrfaglig orienterte og godt forberedte til et arbeidsliv i kontinuerlig endring. NTNUs utdanninger skal bidra til å møte framtidens kompetansebehov, og vi skal tilby fleksible og tilgjengelige utdanningstilbud som gjør det mulig å lære gjennom hele livet. Ambisjon 3 NTNU skal være et attraktivt akademisk felleskap Norges teknisk-naturvitenskapelige universitet skal være det mest attraktive universitetet i Norge for ambisiøse studenter og ansatte som søker faglig utvikling og tilhørighet i et sterkt akademisk fellesskap.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal ha et bredt utdanningstilbud og utdanne økonomer og ingeniører med dyp fagkunnskap og tverrfaglig samarbeidskompetanse. • Sikre at utdanningsportefølje og forskning utvikles i et tett samspill og danner et sterkt grunnlag for videre forskning, utdanning, innovasjon og formidling. I tillegg til toppforskning krever dette at vi legger til rette for langsiktig kunnskapsutvikling i bredden av våre fagområder og har en bærekraftig portefølje av eksternt finansierte aktiviteter. • Videreutvikle den utdanningsfaglige kompetansen vår og styrke arbeidet med å fornye lærings-, undervisnings- og vurderingsformer, i tråd med den internasjonale kunnskapsfronten.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.79</span>
+                  </td>
+                  <td>Ph.d.-kandidatene er en viktig del av vår forskningsressurs, og doktorgradsutdanningen skal være anerkjent for å holde høyt internasjonalt nivå. Forskningsaktiviteten vår skal gi et sterkt grunnlag for fremragende utdanning, innovasjon og formidling. NTNU skal tilby nasjonalt og internasjonalt attraktive utdanninger som er forskningsbaserte, relevante og framtidsrettede, og som utvikles i tett samspill med arbeidslivet og andre samfunnsaktører. Vi skal videreutvikle den utdanningsfaglige kompetansen vår og styrke arbeidet med å fornye lærings-, undervisnings- og vurderingsformer, i tråd med den internasjonale kunnskapsfronten.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal utnytte fakultetets sterke fagmiljøer innen tverrfaglig samarbeid, læringsmiljø og varierte læringsformer. Våre kandidater skal lede omstillingen til et mer bærekraftig samfunn gjennom kunnskap om bærekraft, økonomisk kompetanse, teknologisk forståelse og ledelsesferdigheter. • Tilpasse utdanningene til fremtidens kompetansebehov innen våre fagfelt, og tilby fleksible utdanningstilbud som støtter livslang læring. Gjennom å koble forskning med undervisning skal våre utdanninger være relevante, fremtidsrettede og utvikles i tett dialog med øvrige fagmiljøer, arbeidslivet og andre samfunnsaktører.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">0.77</span>
+                  </td>
+                  <td>Ph.d.-kandidatene er en viktig del av vår forskningsressurs, og doktorgradsutdanningen skal være anerkjent for å holde høyt internasjonalt nivå. Forskningsaktiviteten vår skal gi et sterkt grunnlag for fremragende utdanning, innovasjon og formidling. NTNU skal tilby nasjonalt og internasjonalt attraktive utdanninger som er forskningsbaserte, relevante og framtidsrettede, og som utvikles i tett samspill med arbeidslivet og andre samfunnsaktører. Vi skal videreutvikle den utdanningsfaglige kompetansen vår og styrke arbeidet med å fornye lærings-, undervisnings- og vurderingsformer, i tråd med den internasjonale kunnskapsfronten.</td>
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- Bottom Divergent Chunks (Collapsed by Default) -->
+      <details class="chunk-section divergent">
+        <summary>Bottom 10 Most Semantically Divergent Chunk Pairs</summary>
+        <div style="padding: 0; overflow: hidden;">
+          <table class="chunk-table">
+            <thead>
+              <tr>
+                <th style="width: 45%;">Fakultetsstrategi-oktober-utkast</th>
+                <th style="width: 10%;">Similarity</th>
+                <th style="width: 45%;">NTNU-Strategi-2035</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>Vi har et inkluderende og trygt arbeidsmiljø som fremmer trivsel, helse og nysgjerrighet. Som arbeidsgiver sikrer fakultetet forutsigbare, attraktive arbeidsforhold og rammebetingelser. Vi har læringsmiljøer som fremmer en sterk faglig identitet og motvirker frafall. Vi har gode relasjoner mellom studenter og ansatte.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.21</span>
+                  </td>
+                  <td>Strategi - NTNU 2035 NTNU 2035 er strategien for Norges teknisk-naturvitenskapelige universitet med campuser i Trondheim, Gjøvik og Ålesund. Strategien skal vise vei for videre utvikling av NTNU samtidig som vår egenart og integritet som akademisk institusjon bevares. Strategien bygger på NTNUs spesielle egenart. Vi er et breddeuniversitet med en teknisk-naturvitenskapelig hovedprofil, og med et tyngdepunkt innen profesjonsutdanning.</td>
+                </tr>
+              
+                <tr>
+                  <td>• Tilby fremragende læringsmiljøer og god studentvelferd preget av faglig fordypning, personlig vekst og sosial tilhørighet. Dette skal gjøre oss attraktive for talentfulle studenter og bidra til at de trives, utvikles og fullfører studiene hos oss. • Fremme et inkluderende studentmiljø der ulike perspektiver verdsettes, og alle føler seg sett og hørt. Dette vil styrke læringen og øke attraktiviteten til våre studieprogrammer og emner.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.22</span>
+                  </td>
+                  <td>Strategi - NTNU 2035 NTNU 2035 er strategien for Norges teknisk-naturvitenskapelige universitet med campuser i Trondheim, Gjøvik og Ålesund. Strategien skal vise vei for videre utvikling av NTNU samtidig som vår egenart og integritet som akademisk institusjon bevares. Strategien bygger på NTNUs spesielle egenart. Vi er et breddeuniversitet med en teknisk-naturvitenskapelig hovedprofil, og med et tyngdepunkt innen profesjonsutdanning.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi har et inkluderende og trygt arbeidsmiljø som fremmer trivsel, helse og nysgjerrighet. Som arbeidsgiver sikrer fakultetet forutsigbare, attraktive arbeidsforhold og rammebetingelser. Vi har læringsmiljøer som fremmer en sterk faglig identitet og motvirker frafall. Vi har gode relasjoner mellom studenter og ansatte.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.23</span>
+                  </td>
+                  <td>NTNU er et universitet med høye ambisjoner. Strategien fremmer tre overordnede ambisjoner som skal være retningsgivende for utvikling og prioriteringer i strategiperioden. De tre ambisjonene vektlegger ulike dimensjoner i NTNUs mål-bilde. Strategien fremmer videre fire forutsetninger, som må være ivaretatt for å realisere ambisjonene.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi oppfordrer og legger til rette for at våre ansatte deltar i samfunnsdebatten med forskningsbasert kunnskap. Ved å tydelig fremheve akademisk frihet som en kjerneverdi, sikrer fakultetet at det forblir en arena for kunnskap, refleksjon og kritisk tenkning. Premiss B: Lærings- og arbeidsmiljø  Vi kjennetegnes av en kultur med respekt, omtenksomhet og en høy grad av involvering og medvirkning fra både ansatte og studenter. Alle studenter og ansatte ved fakultetet skal bidra til godt og utviklende lærings- og arbeidsmiljø, hvor ledere har et særskilt ansvar.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.24</span>
+                  </td>
+                  <td>NTNU er et universitet med høye ambisjoner. Strategien fremmer tre overordnede ambisjoner som skal være retningsgivende for utvikling og prioriteringer i strategiperioden. De tre ambisjonene vektlegger ulike dimensjoner i NTNUs mål-bilde. Strategien fremmer videre fire forutsetninger, som må være ivaretatt for å realisere ambisjonene.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi har et inkluderende og trygt arbeidsmiljø som fremmer trivsel, helse og nysgjerrighet. Som arbeidsgiver sikrer fakultetet forutsigbare, attraktive arbeidsforhold og rammebetingelser. Vi har læringsmiljøer som fremmer en sterk faglig identitet og motvirker frafall. Vi har gode relasjoner mellom studenter og ansatte.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.24</span>
+                  </td>
+                  <td>NTNU 2035 er NTNUs hovedstrategi. Fakultetene, Vitenskapsmuseet, campusene i Gjøvik og Ålesund og instituttene skal utvikle egne strategier som konkretiserer hovedstrategien. Hovedstrategien har en tiårig tidshorisont og skal revideres senest etter seks år. Ambisjoner Ambisjon 1 NTNU skal være et ledende internasjonalt universitet Norges teknisk-naturvitenskapelige universitet skal styrke sin posisjon som et internasjonalt anerkjent universitet med en tydelig hovedprofil.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi oppfordrer og legger til rette for at våre ansatte deltar i samfunnsdebatten med forskningsbasert kunnskap. Ved å tydelig fremheve akademisk frihet som en kjerneverdi, sikrer fakultetet at det forblir en arena for kunnskap, refleksjon og kritisk tenkning. Premiss B: Lærings- og arbeidsmiljø  Vi kjennetegnes av en kultur med respekt, omtenksomhet og en høy grad av involvering og medvirkning fra både ansatte og studenter. Alle studenter og ansatte ved fakultetet skal bidra til godt og utviklende lærings- og arbeidsmiljø, hvor ledere har et særskilt ansvar.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.25</span>
+                  </td>
+                  <td>Strategi - NTNU 2035 NTNU 2035 er strategien for Norges teknisk-naturvitenskapelige universitet med campuser i Trondheim, Gjøvik og Ålesund. Strategien skal vise vei for videre utvikling av NTNU samtidig som vår egenart og integritet som akademisk institusjon bevares. Strategien bygger på NTNUs spesielle egenart. Vi er et breddeuniversitet med en teknisk-naturvitenskapelig hovedprofil, og med et tyngdepunkt innen profesjonsutdanning.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal bygge et fellesskap preget av tillit og engasjement, der ansatte og studenter skal ha reell innflytelse. 6 Premisser – forutsetninger for å lykkes  Premiss A: Akademisk frihet  Den akademiske friheten er en grunnleggende forutsetning for vår faglige aktivitet. Vi arbeider i tråd med anerkjente normer for redelighet og kvalitet innenfor våre felter. Vi vil hegne om fortsatt akademisk frihet og vår uavhengighet, både institusjonelt og for alle våre vitenskapelige ansatte.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.25</span>
+                  </td>
+                  <td>NTNU er et universitet med høye ambisjoner. Strategien fremmer tre overordnede ambisjoner som skal være retningsgivende for utvikling og prioriteringer i strategiperioden. De tre ambisjonene vektlegger ulike dimensjoner i NTNUs mål-bilde. Strategien fremmer videre fire forutsetninger, som må være ivaretatt for å realisere ambisjonene.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal samarbeide tettere med ledende kunnskapsmiljøer over hele verden. Dette oppnår vi gjennom å  • Bygge og videreutvikle sterke forskningsmiljøer på høyt internasjonalt nivå, i samspill med ledende forskningsmiljøer globalt. Vi skal flytte forskningsfronten gjennom betydningsfulle forskningspublikasjoner og tilslag på toppforskningsprosjekter. • Tilby forskningsbaserte utdanninger av høy kvalitet som møter internasjonale standarder gjennom akkreditering, er attraktive både nasjonalt og internasjonalt, og anerkjennes gjennom priser og merittering av undervisere.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.25</span>
+                  </td>
+                  <td>NTNU er et universitet med høye ambisjoner. Strategien fremmer tre overordnede ambisjoner som skal være retningsgivende for utvikling og prioriteringer i strategiperioden. De tre ambisjonene vektlegger ulike dimensjoner i NTNUs mål-bilde. Strategien fremmer videre fire forutsetninger, som må være ivaretatt for å realisere ambisjonene.</td>
+                </tr>
+              
+                <tr>
+                  <td>Vi skal bygge et fellesskap preget av tillit og engasjement, der ansatte og studenter skal ha reell innflytelse. 6 Premisser – forutsetninger for å lykkes  Premiss A: Akademisk frihet  Den akademiske friheten er en grunnleggende forutsetning for vår faglige aktivitet. Vi arbeider i tråd med anerkjente normer for redelighet og kvalitet innenfor våre felter. Vi vil hegne om fortsatt akademisk frihet og vår uavhengighet, både institusjonelt og for alle våre vitenskapelige ansatte.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.26</span>
+                  </td>
+                  <td>Strategi - NTNU 2035 NTNU 2035 er strategien for Norges teknisk-naturvitenskapelige universitet med campuser i Trondheim, Gjøvik og Ålesund. Strategien skal vise vei for videre utvikling av NTNU samtidig som vår egenart og integritet som akademisk institusjon bevares. Strategien bygger på NTNUs spesielle egenart. Vi er et breddeuniversitet med en teknisk-naturvitenskapelig hovedprofil, og med et tyngdepunkt innen profesjonsutdanning.</td>
+                </tr>
+              
+                <tr>
+                  <td>• Legge til rette for mobilitet og internasjonalisering, både for studenter og ansatte. Internasjonalt samarbeid og rekruttering vil fremme faglig utvikling, nettverksbygging og nye impulser. Det vil styrke vår evne til å løse samfunnsutfordringer, både nasjonalt og globalt. • Sikre medvirkning og involvering i hele organisasjonen.</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">0.26</span>
+                  </td>
+                  <td>Strategi - NTNU 2035 NTNU 2035 er strategien for Norges teknisk-naturvitenskapelige universitet med campuser i Trondheim, Gjøvik og Ålesund. Strategien skal vise vei for videre utvikling av NTNU samtidig som vår egenart og integritet som akademisk institusjon bevares. Strategien bygger på NTNUs spesielle egenart. Vi er et breddeuniversitet med en teknisk-naturvitenskapelig hovedprofil, og med et tyngdepunkt innen profesjonsutdanning.</td>
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </details>
+      
+    
+  
+    
+  
+    
+  
+    
+  
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>
+      Generated by <a href="https://github.com/s0rlie/rataitosk" target="_blank" rel="noopener"><strong>Rataitosk</strong></a>
+    </p>
+    <p class="citation">
+      Aarnseth, T. (2025). <em>Rataitosk: A Method for Assessing Strategic Coherence via Inter-Document Semantic Alignment</em> [Bachelor's thesis, Høgskolen i Molde]. Brage.
+    </p>
+  </div>
+</body>
+</html>

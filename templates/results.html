@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SAMS Scorecard: {{ doc1_name }} vs {{ doc2_name }}</title>
+  <style>
+    /* === COLOR SYSTEM === */
+    :root {
+      /* Core Palette */
+      --sky-blue: #96C0D9;           /* Primary UI, links, scorecard background */
+      --dusty-blue: #99AED0;         /* Table headers, darker emphasis */
+      --periwinkle: #9FBEDB;         /* Light backgrounds, subtle elements */
+      --teal-blue: #87B4C4;          /* Positive scores, high similarity */
+      --lavender: #B1B9DB;           /* Neutral scores, balanced states */
+      --warm-tan: #C6AA87;           /* Divergent scores, low similarity */
+      
+      /* Background System */
+      --bg-page: #f8f9fb;
+      --bg-card: #ffffff;
+      --bg-card-subtle: #fafbfc;
+      
+      /* Text Colors */
+      --text-primary: #2c3e50;
+      --text-secondary: #5a6c7d;
+      --text-muted: #8492a6;
+      
+      /* Borders */
+      --border-light: #e8eef3;
+      --border-medium: #d0dae3;
+    }
+
+    /* === GENERAL === */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0 auto;
+      padding: 2em;
+      max-width: 1200px;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--text-primary);
+      border-bottom: 2px solid var(--dusty-blue);
+      padding-bottom: 0.5em;
+      margin-top: 0;
+      margin-bottom: 1em;
+      font-weight: 600;
+      font-size: 1.8em;
+    }
+
+    h2 {
+      color: var(--sky-blue);
+      border-bottom: 2px solid var(--border-light);
+      padding-bottom: 0.4em;
+      margin-top: 0;
+      margin-bottom: 1em;
+      font-weight: 600;
+      font-size: 1.4em;
+    }
+
+    /* === METADATA SECTION === */
+    .metadata {
+      background-color: var(--bg-card-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 0.5em;
+      padding: 1em 1.5em;
+      margin: 1.5em 0;
+      font-size: 0.95em;
+      color: var(--text-secondary);
+    }
+
+    .metadata p {
+      margin: 0.5em 0;
+    }
+
+    .metadata a {
+      color: var(--sky-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .metadata a:hover {
+      text-decoration: underline;
+    }
+
+    /* === COLLAPSIBLE SECTIONS === */
+    details {
+      border: 1px solid var(--border-light);
+      border-radius: 0.5em;
+      margin: 1.5em 0;
+      background-color: var(--bg-card);
+    }
+
+    details summary {
+      padding: 1em 1.5em;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--sky-blue);
+      user-select: none;
+      background-color: var(--bg-card-subtle);
+      border-radius: 0.5em;
+      transition: background-color 0.2s ease;
+    }
+
+    details summary:hover {
+      background-color: rgba(159, 190, 219, 0.2);
+    }
+
+    details[open] summary {
+      border-bottom: 1px solid var(--border-light);
+      border-radius: 0.5em 0.5em 0 0;
+    }
+
+    details .content {
+      padding: 1.5em;
+    }
+
+    /* Custom arrow for summary */
+    details summary {
+      list-style: none;
+    }
+
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details summary::before {
+      content: '▸';
+      display: inline-block;
+      margin-right: 0.5em;
+      transition: transform 0.2s ease;
+      color: var(--sky-blue);
+    }
+
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    /* === SAMS SCORECARD === */
+    .sams-scorecard {
+      background-color: rgba(150, 192, 217, 0.08);
+      border: 2px solid var(--sky-blue);
+      border-radius: 0.5em;
+      padding: 1.5em;
+      margin: 2em 0;
+      box-shadow: 0 2px 8px rgba(150, 192, 217, 0.15);
+    }
+
+    .scorecard-note {
+      margin-top: 1em;
+      padding: 0.75em 1em;
+      background-color: rgba(159, 190, 219, 0.15);
+      border-left: 3px solid var(--sky-blue);
+      font-size: 0.9em;
+      color: var(--text-secondary);
+      font-style: italic;
+      border-radius: 0 0.25em 0.25em 0;
+    }
+
+    /* === SCORES TABLE === */
+    .scores-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1em;
+    }
+
+    .scores-table thead {
+      background-color: var(--dusty-blue);
+      color: white;
+    }
+
+    .scores-table th {
+      padding: 0.9em 1em;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9em;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .scores-table td {
+      padding: 1em;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+    }
+
+    .scores-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .scores-table tbody tr:hover {
+      background-color: rgba(159, 190, 219, 0.15);
+    }
+
+    /* === SCORE BADGES === */
+    .score-badge {
+      display: inline-block;
+      padding: 0.4em 0.9em;
+      border-radius: 0.4em;
+      font-weight: 600;
+      font-size: 1em;
+      text-align: center;
+      min-width: 60px;
+    }
+
+    .score-percentage {
+      background-color: var(--teal-blue);
+      color: white;
+    }
+
+    .score-positive {
+      background-color: var(--teal-blue);
+      color: white;
+    }
+
+    .score-negative {
+      background-color: var(--warm-tan);
+      color: white;
+    }
+
+    .score-neutral {
+      background-color: var(--lavender);
+      color: white;
+    }
+
+    /* === CHUNK PAIRS TABLE === */
+    .chunk-table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.9em;
+    }
+
+    .chunk-table thead {
+      background-color: var(--dusty-blue);
+      color: white;
+    }
+
+    .chunk-table th {
+      padding: 0.8em 1em;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .chunk-table td {
+      padding: 1em;
+      border-bottom: 1px solid var(--border-light);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    .chunk-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .chunk-table tbody tr:hover {
+      background-color: rgba(159, 190, 219, 0.15);
+    }
+
+    .similarity-cell {
+      text-align: center;
+      vertical-align: middle !important;
+    }
+
+    .similarity-badge {
+      display: inline-block;
+      padding: 0.4em 0.8em;
+      border-radius: 0.4em;
+      font-weight: 600;
+      font-size: 0.95em;
+    }
+
+    .similarity-badge.high {
+      background-color: var(--teal-blue);
+      color: white;
+    }
+
+    .similarity-badge.low {
+      background-color: var(--warm-tan);
+      color: white;
+    }
+
+    /* === CHUNK SECTION STYLING === */
+    .chunk-section {
+      margin-top: 2em;
+    }
+
+    .chunk-section.similar summary {
+      color: var(--teal-blue);
+    }
+
+    .chunk-section.divergent summary {
+      color: var(--warm-tan);
+    }
+
+    /* === INTERPRETATION CELL === */
+    .interpretation {
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    .interpretation strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .interpretation small {
+      color: var(--text-muted);
+      font-style: italic;
+      display: block;
+      margin-top: 0.4em;
+    }
+
+    /* === METHODOLOGY SECTION === */
+    .methodology-box {
+      background-color: rgba(159, 190, 219, 0.12);
+      border-left: 3px solid var(--sky-blue);
+      padding: 1em 1.5em;
+      margin-bottom: 1.5em;
+      border-radius: 0 0.25em 0.25em 0;
+    }
+
+    .methodology-box h4 {
+      color: var(--dusty-blue);
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+      font-weight: 600;
+      font-size: 1em;
+    }
+
+    .methodology-box h4:first-of-type {
+      margin-top: 0;
+    }
+
+    .methodology-box p {
+      margin: 0.5em 0;
+      line-height: 1.6;
+    }
+
+    .methodology-box em {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .methodology-footer {
+      margin-top: 1.5em;
+      padding-top: 1em;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .methodology-footer h4 {
+      color: var(--dusty-blue);
+      margin-bottom: 0.5em;
+      font-weight: 600;
+    }
+
+    .methodology-footer p {
+      margin: 0;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* === TECHNICAL NOTE === */
+    .technical-note {
+      margin-top: 2em;
+      background-color: var(--bg-card-subtle);
+    }
+
+    .technical-note summary {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .technical-note ul {
+      margin: 0.5em 0;
+      padding-left: 1.5em;
+    }
+
+    .technical-note li {
+      margin: 0.5em 0;
+      line-height: 1.6;
+    }
+
+    .technical-note hr {
+      margin: 1.5em 0;
+      border: none;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* === FOOTER === */
+    .footer {
+      margin-top: 3em;
+      padding-top: 2em;
+      border-top: 2px solid var(--border-light);
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 0.9em;
+    }
+
+    .footer p {
+      margin: 0.5em 0;
+    }
+
+    .footer a {
+      color: var(--sky-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .footer .citation {
+      font-style: italic;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <h1>Strategic Alignment Measurement Scorecard</h1>
+  
+  <!-- Metadata Section -->
+  <div class="metadata">
+    <p><strong>Document 1:</strong> {{ doc1_name }}</p>
+    <p><strong>Document 2:</strong> {{ doc2_name }}</p>
+    <p><strong>Analysis Date:</strong> {{ timestamp }}</p>
+    <p><strong>Method:</strong> Semantic similarity analysis using sentence embeddings</p>
+    <p><strong>Purpose:</strong> Computational detection of semantic alignment patterns in strategic documents</p>
+  </div>
+
+  <!-- How to Read This Report -->
+  <details open>
+    <summary>How to Read This Report</summary>
+    <div class="content">
+      <p>This report presents <strong>four semantic axes</strong> measuring different aspects of strategic alignment between two documents using computational text analysis.</p>
+      
+      <div class="methodology-box">
+        <h4>Thematic Similarity (0-100%)</h4>
+        <p><strong>What it measures:</strong> Direct pairwise cosine similarity between all chunk combinations from both documents.</p>
+        <p><strong>Interpretation:</strong> 
+        Scores above 70% indicate high thematic overlap. 
+        Scores between 40-70% suggest moderate alignment. 
+        Scores below 40% indicate distinct focus areas.</p>
+        <p><em>Note: Measures shared vocabulary and topics, not strategic effectiveness.</em></p>
+        
+        <h4>Temporal Positioning (-100 to +100)</h4>
+        <p><strong>What it measures:</strong> Relative emphasis on present-focused vs future-focused language using differential two-anchor scoring.</p>
+        <p><strong>Interpretation:</strong> 
+        Positive scores = {{ doc1_name }} more future-focused than {{ doc2_name }}. 
+        Negative scores = {{ doc2_name }} more future-focused than {{ doc1_name }}. 
+        Scores near zero = similar temporal emphasis.</p>
+        <p><em>Note: Measures temporal language patterns, not actual strategic time horizons.</em></p>
+        
+        <h4>Operational Grounding (-100 to +100)</h4>
+        <p><strong>What it measures:</strong> Relative emphasis on present-capability and operational-feasibility language using single-anchor comparative scoring.</p>
+        <p><strong>Interpretation:</strong> 
+        Positive scores = {{ doc1_name }} uses more operationally-grounded language. 
+        Negative scores = {{ doc2_name }} uses more operationally-grounded language. 
+        Scores near zero = similar operational emphasis.</p>
+        <p><em>Note: Measures language about current capabilities, not actual operational feasibility.</em></p>
+        
+        <h4>Transformational Vision (-100 to +100)</h4>
+        <p><strong>What it measures:</strong> Relative emphasis on future-ambition and transformational language using single-anchor comparative scoring.</p>
+        <p><strong>Interpretation:</strong> 
+        Positive scores = {{ doc1_name }} uses more transformational language. 
+        Negative scores = {{ doc2_name }} uses more transformational language. 
+        Scores near zero = similar transformational emphasis.</p>
+        <p><em>Note: Measures language about future ambitions, not strategic capacity or change readiness.</em></p>
+        
+        <div class="methodology-footer">
+          <h4>Three Architectural Patterns</h4>
+          <p>This analysis employs three distinct computational approaches matched to different theoretical constructs: <strong>(1)</strong> direct pairwise comparison for baseline overlap, <strong>(2)</strong> differential two-anchor scoring for oppositional emphasis (present vs future), and <strong>(3)</strong> single-anchor comparative scoring for unipolar intensity measures (operational grounding, transformational vision).</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <!-- SAMS SCORECARD - Primary Artifact -->
+  <div class="sams-scorecard">
+    <h2>Semantic Alignment Scores</h2>
+    
+    <table class="scores-table">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Semantic Axis</th>
+          <th style="width: 15%;">Score</th>
+          <th style="width: 60%;">Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for axis in results %}
+          <tr>
+            <td><strong>{{ axis.axis }}</strong></td>
+            <td>
+              {% if axis.axis == "Thematic Similarity" %}
+                <span class="score-badge score-percentage">{{ axis.score }}%</span>
+              {% else %}
+                {% if axis.score > 2 %}
+                  <span class="score-badge score-positive">+{{ axis.score }}</span>
+                {% elif axis.score < -2 %}
+                  <span class="score-badge score-negative">{{ axis.score }}</span>
+                {% else %}
+                  <span class="score-badge score-neutral">{{ axis.score }}</span>
+                {% endif %}
+              {% endif %}
+            </td>
+            <td class="interpretation">
+              {% if axis.axis == "Thematic Similarity" %}
+                {% if axis.score > 70 %}
+                  <strong>High alignment:</strong> Documents share substantial vocabulary and topics, suggesting strong strategic coherence.
+                {% elif axis.score > 40 %}
+                  <strong>Moderate alignment:</strong> Documents have overlapping themes but also distinct focus areas.
+                {% else %}
+                  <strong>Low alignment:</strong> Documents address different topics or use different language for similar concepts.
+                {% endif %}
+                <br><small>Direct pairwise cosine similarity across all chunk pairs.</small>
+                
+              {% elif axis.axis == "Temporal Positioning" %}
+                {% if axis.score > 10 %}
+                  <strong>{{ doc1_name }} significantly more future-focused:</strong> Uses substantially more future-oriented language than {{ doc2_name }}.
+                {% elif axis.score > 2 %}
+                  <strong>{{ doc1_name }} slightly more future-focused:</strong> Shows moderate difference in temporal emphasis.
+                {% elif axis.score < -10 %}
+                  <strong>{{ doc2_name }} significantly more future-focused:</strong> Uses substantially more future-oriented language than {{ doc1_name }}.
+                {% elif axis.score < -2 %}
+                  <strong>{{ doc2_name }} slightly more future-focused:</strong> Shows moderate difference in temporal emphasis.
+                {% else %}
+                  <strong>Similar temporal emphasis:</strong> Both documents use comparable present/future language (difference < 2 points).
+                {% endif %}
+                <br><small>Differential two-anchor scoring (present-focused vs future-focused language).</small>
+                
+              {% elif axis.axis == "Operational Grounding" %}
+                {% if axis.score > 10 %}
+                  <strong>{{ doc1_name }} significantly more operationally grounded:</strong> Emphasizes current capabilities and feasibility substantially more.
+                {% elif axis.score > 2 %}
+                  <strong>{{ doc1_name }} slightly more operationally grounded:</strong> Shows moderate emphasis on present-state realism.
+                {% elif axis.score < -10 %}
+                  <strong>{{ doc2_name }} significantly more operationally grounded:</strong> Emphasizes current capabilities and feasibility substantially more.
+                {% elif axis.score < -2 %}
+                  <strong>{{ doc2_name }} slightly more operationally grounded:</strong> Shows moderate emphasis on present-state realism.
+                {% else %}
+                  <strong>Similar operational emphasis:</strong> Both documents show comparable grounding in current capabilities (difference < 2 points).
+                {% endif %}
+                <br><small>Single-anchor comparative scoring against operational grounding reference.</small>
+                
+              {% elif axis.axis == "Transformational Vision" %}
+                {% if axis.score > 10 %}
+                  <strong>{{ doc1_name }} significantly more transformational:</strong> Uses substantially more ambitious future-oriented language.
+                {% elif axis.score > 2 %}
+                  <strong>{{ doc1_name }} slightly more transformational:</strong> Shows moderate transformational emphasis.
+                {% elif axis.score < -10 %}
+                  <strong>{{ doc2_name }} significantly more transformational:</strong> Uses substantially more ambitious future-oriented language.
+                {% elif axis.score < -2 %}
+                  <strong>{{ doc2_name }} slightly more transformational:</strong> Shows moderate transformational emphasis.
+                {% else %}
+                  <strong>Similar transformational emphasis:</strong> Both documents show comparable future ambition (difference < 2 points).
+                {% endif %}
+                <br><small>Single-anchor comparative scoring against transformational vision reference.</small>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    <div class="scorecard-note">
+      This scorecard serves as a boundary object for institutional dialogue about semantic alignment patterns in strategic documents.
+    </div>
+  </div>
+
+  <!-- Technical Details (Collapsed) -->
+  <details class="technical-note">
+    <summary>Technical Details</summary>
+    <div class="content">
+      <p><strong>Embedding Model:</strong> sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</p>
+      <p><strong>Chunking Strategy:</strong> Semantic chunking with sentence-level granularity</p>
+      <p><strong>Architectural Patterns:</strong></p>
+      <ul>
+        <li><strong>Pattern 1 - Direct Pairwise:</strong> Thematic Similarity (mean pairwise cosine similarity)</li>
+        <li><strong>Pattern 2 - Differential Two-Anchor:</strong> Temporal Positioning (present vs future anchors)</li>
+        <li><strong>Pattern 3 - Single-Anchor Comparative:</strong> Operational Grounding & Transformational Vision</li>
+      </ul>
+      <p><strong>Reference Concepts:</strong> English paragraph anchors adapted from theoretical literature (Table A1.2 in Appendix A)</p>
+      <p><strong>Scoring Philosophy:</strong> Narrow semantic proxies for language patterns, not measures of organizational capacity or strategic reality</p>
+      
+      <hr style="margin: 1.5em 0; border: none; border-top: 1px solid var(--border-light);">
+      
+      <p><strong>Computational Environment:</strong></p>
+      <ul>
+        <li><strong>Hardware:</strong> {{ hardware.cpu_model }}, {{ "%.0f"|format(hardware.memory_gb) }}GB RAM</li>
+        <li><strong>Total Runtime:</strong> 
+          {% if runtime < 60 %}
+            {{ "%.1f"|format(runtime) }}s
+          {% elif runtime < 3600 %}
+            {{ (runtime // 60)|int }}m {{ "%.1f"|format(runtime % 60) }}s
+          {% else %}
+            {{ (runtime // 3600)|int }}h {{ ((runtime % 3600) // 60)|int }}m
+          {% endif %}
+        </li>
+      </ul>
+      <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 1em;">
+        <em>Note: All processing performed locally. Hardware specifications and runtime included to support reproducibility and demonstrate computational feasibility of local-first semantic analysis.</em>
+      </p>
+    </div>
+  </details>
+
+  <!-- Chunk Pair Analysis -->
+  {% for axis in results %}
+    {% if axis.axis == 'Thematic Similarity' and axis.top_chunks %}
+      
+      <!-- Top Similar Chunks (Open by Default) -->
+      <details class="chunk-section similar" open>
+        <summary>Top 10 Most Semantically Similar Chunk Pairs</summary>
+        <div style="padding: 0; overflow: hidden;">
+          <table class="chunk-table">
+            <thead>
+              <tr>
+                <th style="width: 45%;">{{ axis.doc1 }}</th>
+                <th style="width: 10%;">Similarity</th>
+                <th style="width: 45%;">{{ axis.doc2 }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for chunk1, chunk2, score in axis.top_chunks | reverse %}
+                <tr>
+                  <td>{{ chunk1 }}</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge high">{{ "%.2f"|format(score) }}</span>
+                  </td>
+                  <td>{{ chunk2 }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+
+      <!-- Bottom Divergent Chunks (Collapsed by Default) -->
+      <details class="chunk-section divergent">
+        <summary>Bottom 10 Most Semantically Divergent Chunk Pairs</summary>
+        <div style="padding: 0; overflow: hidden;">
+          <table class="chunk-table">
+            <thead>
+              <tr>
+                <th style="width: 45%;">{{ axis.doc1 }}</th>
+                <th style="width: 10%;">Similarity</th>
+                <th style="width: 45%;">{{ axis.doc2 }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for chunk1, chunk2, score in axis.bottom_chunks %}
+                <tr>
+                  <td>{{ chunk1 }}</td>
+                  <td class="similarity-cell">
+                    <span class="similarity-badge low">{{ "%.2f"|format(score) }}</span>
+                  </td>
+                  <td>{{ chunk2 }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      
+    {% endif %}
+  {% endfor %}
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>
+      Generated by <a href="https://github.com/s0rlie/rataitosk" target="_blank" rel="noopener"><strong>Rataitosk</strong></a>
+    </p>
+    <p class="citation">
+      Aarnseth, T. (2025). <em>Rataitosk: A Method for Assessing Strategic Coherence via Inter-Document Semantic Alignment</em> [Bachelor's thesis, Høgskolen i Molde]. Brage.
+    </p>
+  </div>
+</body>
+</html>

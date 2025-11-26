@@ -1,0 +1,26 @@
+[
+  {
+    "id": "thematic_similarity",
+    "label": "Thematic Similarity",
+    "description": "Direct pairwise: Measures baseline semantic overlap (WHAT)",
+    "enabled": true
+  },
+  {
+    "id": "temporal_positioning",
+    "label": "Temporal Positioning",
+    "description": "Differential two-anchor: Present-focused vs future-focused emphasis (WHEN)",
+    "enabled": true
+  },
+  {
+    "id": "operational_grounding",
+    "label": "Operational Grounding",
+    "description": "Single-anchor: Emphasis on current capabilities and feasibility (HOW grounded)",
+    "enabled": true
+  },
+  {
+    "id": "transformational_vision",
+    "label": "Transformational Vision",
+    "description": "Single-anchor: Emphasis on future ambitions beyond current state (HOW ambitious)",
+    "enabled": true
+  }
+]
