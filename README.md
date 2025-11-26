@@ -212,3 +212,4 @@ https://www.ntnu.edu/employees/thomas.aarnseth
 
 
 This work was supervised by Professor Bjørn Jæger at Høgskolen i Molde. Professor Hans Solli-Sæther provided essential guidance on the strategy perspective.
+
