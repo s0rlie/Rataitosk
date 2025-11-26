@@ -104,7 +104,6 @@ python cli/run_rataitosk.py
 ### Step 3: Review Results
 Find generated SAMS Scorecards in the `output/` folder:
 - **HTML report:** Human-readable scorecard with visualizations
-- **JSON data:** Machine-readable results for further processing
 
 ---
 
@@ -112,7 +111,7 @@ Find generated SAMS Scorecards in the `output/` folder:
 ```
 rataitosk/
 ├── input/              # Place your PDF documents here
-├── output/             # Generated SAMS Scorecards (HTML & JSON)
+├── output/             # Generated SAMS Scorecards (HTML)
 ├── axes/               # Semantic axis implementations
 │   ├── thematic_similarity.py
 │   ├── temporal_positioning.py
@@ -212,4 +211,5 @@ https://www.ntnu.edu/employees/thomas.aarnseth
 
 
 This work was supervised by Professor Bjørn Jæger at Høgskolen i Molde. Professor Hans Solli-Sæther provided essential guidance on the strategy perspective.
+
 
